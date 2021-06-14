@@ -1,12 +1,17 @@
 const ethers = require('ethers');
+const dateTime = require('node-datetime');
+const dt = dateTime.create();
 
 const addresses = {
     WBNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     // BUSD: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    TARGET : '0x983513Ecea8F6D832EDf461A567fa46C38F05D3B',
+
+    TARGET : '0x6Cc617bFf42ed2f8Daf932781C02517D9FC364fb',
+
+
     factory: '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73', 
     router: '0x10ed43c718714eb63d5aa57b78b54704e256024e',
-    recipient: '0x4F2200C7E437F92A2bbB03A5c867b379B72F87B0'
+    recipient: '0x0E8722F90f8dF231aAD9efe87fDb020c58Fdd455'
   }
 
 
@@ -24,65 +29,127 @@ const router = new ethers.Contract(
   ],
   account
 );
-
-const wbnb1 = new ethers.Contract(
+const erc = new ethers.Contract(
     addresses.WBNB,
-    [
-      'function approve(address spender, uint amount) public returns(bool)',
-    ],
+    [{"constant": true,"inputs": [{"name": "_owner","type": "address"}],"name": "balanceOf","outputs": [{"name": "balance","type": "uint256"}],"payable": false,"type": "function"}],
     account
-  );
-  
-  console.log(`Before Approve`);
-  const valueToapprove = ethers.utils.parseUnits('0.01', 'ether');
-  const init = async () => {
-    const tx = await wbnb1.approve(
-      router.address, 
-      valueToapprove,
-      {
-          gasPrice: mygasPrice,
-          gasLimit: 210000
-      }
-    );
-    console.log(`After Approve`);
-    const receipt = await tx.wait(); 
-    console.log('Transaction receipt');
-    console.log(receipt);
-  } 
+  );  
 
-  init();
-  
-  const testtx = async () => {
-  console.log(`after testtx`);
+  const factory = new ethers.Contract(
+    addresses.factory,
+    [
+      'event PairCreated(address indexed token0, address indexed token1, address pair, uint)',
+      'function getPair(address tokenA, address tokenB) external view returns (address pair)'
+      ],
+    account
+  ); 
 
-  let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
+console.log("BOT STARTED !!!")
 
-  const amountIn = ethers.utils.parseUnits('0.005', 'ether');
-  const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
-  //Our execution price will be a bit different, we need some flexbility
-  const amountOutMin = amounts[1].sub(amounts[1].div(10));
 
-  console.log(`
-    Buying new token
-    =================
-    tokenIn: ${amountIn} ${tokenIn} (WBNB)
-    tokenOut: ${amountOutMin} ${tokenOut}
-  `);
-
-  const tx = await router.swapExactTokensForTokens(
-    amountIn,
-    amountOutMin,
-    [tokenIn, tokenOut],
-    addresses.recipient,
-    Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
-    {
-        gasPrice: mygasPrice,
-        gasLimit: 210000
+factory.on('PairCreated', async (token0, token1, pairAddress) => {
+    var date = await dt.format('d-m-Y');
+    var time 
+    time = await dt.format('H:M:S');
+    let tokenIn, tokenOut;
+    if(token0 === addresses.WBNB) {
+      tokenIn = token0;
+      tokenOut = token1;
     }
-  );
-  console.log(`line 115`);
-  const receipt = await tx.wait(); 
-  console.log('Transaction receipt');
-  console.log(receipt);
-}
-testtx();
+  
+    if(token1 == addresses.WBNB) {
+      tokenIn = token1;
+      tokenOut = token0;
+    }
+    if(typeof tokenIn === 'undefined') {
+        return;
+      }
+    
+      
+    try {
+        const getPairx = await factory.getPair(tokenIn, tokenOut); 
+        const pairBNBvalue = await erc.balanceOf(getPairx);   
+        var bnbne = ethers.utils.formatEther(pairBNBvalue);
+        console.log(`new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
+       
+        if(tokenOut === addresses.TARGET){
+            console.log('\n\n=========================================================')
+            console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
+            console.log('(', date, '-', time, `) new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
+            console.log('=========================================================\n\n')
+            
+            
+            //APPROVE ----------------------------------------------------------------
+            const wbnb1 = new ethers.Contract(
+                addresses.WBNB,
+                [
+                  'function approve(address spender, uint amount) public returns(bool)',
+                ],
+                account
+              );
+            console.log(`Before Approve`);
+            const valueToapprove = ethers.utils.parseUnits('0.005', 'ether');
+            const init = async () => {
+                const tx = await wbnb1.approve(
+                router.address, 
+                valueToapprove,
+                {
+                    gasPrice: mygasPrice,
+                    gasLimit: 210000
+                }
+                );
+                console.log(`After Approve`);
+                const receipt = await tx.wait(); 
+                console.log('Transaction receipt');
+                console.log(receipt);
+            } 
+
+             init();
+            
+            //BUY ----------------------------------------------------------------
+
+            const testtx = async () => {
+            console.log(`after testtx`);
+
+            let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
+            
+            
+              const amountIn = ethers.utils.parseUnits('0.001', 'ether');
+              const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
+              //Our execution price will be a bit different, we need some flexbility
+              const amountOutMin = amounts[1].sub(amounts[1].div(10));
+
+              console.log(`
+                Buying new token
+                =================
+                tokenIn: ${amountIn} ${tokenIn} (WBNB)
+                tokenOut: ${amountOutMin} ${tokenOut}
+              `);
+
+              const tx = await router.swapExactTokensForTokens(
+                amountIn,
+                amountOutMin,
+                [tokenIn, tokenOut],
+                addresses.recipient,
+                Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
+                {
+                    gasPrice: mygasPrice,
+                    gasLimit: 210000
+                }
+              );
+              const receipt = await tx.wait(); 
+              console.log('Transaction receipt');
+              console.log(receipt);
+            }
+            testtx();
+
+
+
+        }
+
+
+       
+    }catch(e){
+        console.log(e)
+    }
+});
