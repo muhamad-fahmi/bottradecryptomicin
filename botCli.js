@@ -1,8 +1,8 @@
+require('dotenv').config()
 const ethers = require('ethers');
 const dateTime = require('node-datetime');
 const dt = dateTime.create();
 const readline = require("readline");
-
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -11,18 +11,17 @@ const rl = readline.createInterface({
 
 
 rl.question("Token Target ? ", function(target) {
+  
       const addresses = {
-          WBNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-
+          WBNB: `${process.env.WBNB}`,
           TARGET : `${target}`,
-
-          factory: '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73', 
-          router: '0x10ed43c718714eb63d5aa57b78b54704e256024e',
-          recipient: '0x0E8722F90f8dF231aAD9efe87fDb020c58Fdd455'
+          factory: `${process.env.FACTORY}`, 
+          router: `${process.env.ROUTER}`,
+          recipient: `${process.env.RECEIPENT}`
       }
 
 
-      const privateKey = 'Your Privete Key';
+      const privateKey = `${process.env.PRIVATE_KEY}`;
       const mygasPrice = ethers.utils.parseUnits('5', 'gwei');
       const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
       const wallet = new ethers.Wallet(privateKey);
@@ -123,6 +122,7 @@ rl.question("Token Target ? ", function(target) {
                   
                     const amountIn = ethers.utils.parseUnits('0.001', 'ether');
                     const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
+                    //Our execution price will be a bit different, we need some flexbility
                     const amountOutMin = amounts[1].sub(amounts[1].div(10));
 
                     console.log(`
