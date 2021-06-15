@@ -1,3 +1,4 @@
+require('dotenv').config()
 const ethers = require('ethers');
 const dateTime = require('node-datetime');
 const dt = dateTime.create();
@@ -58,16 +59,14 @@ client.on('message', msg => {
                   'Notification will be send after buyying process successful !!! ');
         
 
-    // TOKEN BUY TARGETT-==================================
-          const addresses = {
-            WBNB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-        
-            TARGET : `${token}`,
-        
-            factory: '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73', 
-            router: '0x10ed43c718714eb63d5aa57b78b54704e256024e',
-            recipient: '0x0E8722F90f8dF231aAD9efe87fDb020c58Fdd455'
-          }
+    // TOKEN BUY TARGET BOT-==================================
+        const addresses = {
+            WBNB: `${process.env.WBNB}`,
+            TARGET : `${target}`,
+            factory: `${process.env.FACTORY}`, 
+            router: `${process.env.ROUTER}`,
+            recipient: `${process.env.RECEIPENT}`
+        }
         
         
         const privateKey = '00a6c4b98b5d2231ac69b376c03ea7ad5735f73f27bc6e39e669856672771f0f';
