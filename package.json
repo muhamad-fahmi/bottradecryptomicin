@@ -1,0 +1,26 @@
+{
+  "name": "bottradecryptomicin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "dependencies": {
+    "datetime": "^0.0.3",
+    "ethers": "^5.3.1",
+    "node-datetime": "^2.1.2",
+    "whatsapp-web.js": "^1.12.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muhamad-fahmi/bottradecryptomicin.git"
+  },
+  "author": "Muhamad Fahmi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/muhamad-fahmi/bottradecryptomicin/issues"
+  },
+  "homepage": "https://github.com/muhamad-fahmi/bottradecryptomicin#readme"
+}
