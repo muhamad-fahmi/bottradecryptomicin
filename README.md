@@ -1,6 +1,7 @@
 # BOT SHITCOIN TRADING
 
 <h1>USAGE</h1>
+<h3>BOT INSTALLATION </h3>
 <ol>
   <li>Clone this repository</li>
   <li>Run npm install on your console</li>
