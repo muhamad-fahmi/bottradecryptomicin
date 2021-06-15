@@ -1,6 +1,6 @@
 # BOT BUY EARLY SHITCOIN 
 
-<h1>USAGE</h1>
+<h1>USAGE :</h1>
 <h3>BOT INSTALLATION </h3>
 <ol>
   <li>Clone this repository</li>
