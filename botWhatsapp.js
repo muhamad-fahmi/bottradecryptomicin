@@ -69,7 +69,7 @@ client.on('message', msg => {
         }
         
         
-        const privateKey = '00a6c4b98b5d2231ac69b376c03ea7ad5735f73f27bc6e39e669856672771f0f';
+        const privateKey = `${process.env.PRIVATE_KEY}`;
         const mygasPrice = ethers.utils.parseUnits('5', 'gwei');
         const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
         const wallet = new ethers.Wallet(privateKey);
