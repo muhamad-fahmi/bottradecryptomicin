@@ -5,6 +5,8 @@
 <ol>
   <li>Clone this repository</li>
   <li>Run npm install on your console</li>
+  <li>Rename file <b>.env.example</b> to -> <b>.env</b></li>
+  <li>Add Your PRIVATE KEY and WALLET ADDRESS in <b>.env</b> file</li>
   <li>Chose one bot will you run Via Whatsapp Bot / CLI</li>
 </ol>
 <h3>USAGE BOT VIA WHATSAPP</h3>
