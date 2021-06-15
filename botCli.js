@@ -22,7 +22,7 @@ rl.question("Token Target ? ", function(target) {
       }
 
 
-      const privateKey = '00a6c4b98b5d2231ac69b376c03ea7ad5735f73f27bc6e39e669856672771f0f';
+      const privateKey = 'Your Privete Key';
       const mygasPrice = ethers.utils.parseUnits('5', 'gwei');
       const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
       const wallet = new ethers.Wallet(privateKey);
@@ -123,7 +123,6 @@ rl.question("Token Target ? ", function(target) {
                   
                     const amountIn = ethers.utils.parseUnits('0.001', 'ether');
                     const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
-                    //Our execution price will be a bit different, we need some flexbility
                     const amountOutMin = amounts[1].sub(amounts[1].div(10));
 
                     console.log(`
