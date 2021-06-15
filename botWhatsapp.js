@@ -48,16 +48,15 @@ client.on('ready', () => {
 
 
 client.on('message', msg => {
-    console.log('MESSAGE RECEIVED', msg);
+    // console.log('MESSAGE RECEIVED', msg);
     if (msg.body === '!ping') {
       // Send a new message as a reply to the current one
       msg.reply('pong');
 
     } if (msg.body.startsWith('!target ')) {
-        const token = msg.body.split(' ')[1];
-        msg.reply('Target Token Accepted \n', 
-                  'Notification will be send after buyying process successful !!! ');
-        
+        const target = msg.body.split(' ')[1];
+        msg.reply(`Target Token Accepted\nNotification will be send after buyying process successful !!! `);
+        // console.log("BOT STARTED !!!")
 
     // TOKEN BUY TARGET BOT-==================================
         const addresses = {
@@ -70,7 +69,7 @@ client.on('message', msg => {
         
         
         const privateKey = `${process.env.PRIVATE_KEY}`;
-        const mygasPrice = ethers.utils.parseUnits('5', 'gwei');
+        const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
         const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
         const wallet = new ethers.Wallet(privateKey);
         const account = wallet.connect(provider);
@@ -99,6 +98,9 @@ client.on('message', msg => {
           ); 
         
         console.log("BOT STARTED !!!")
+        //SEND INFORMATION BOT STARTED MESSAGE ======
+        client.sendMessage(msg.from, `🟢 BOT STARTED !!!`);
+        // END MESSAGE FUNCTION
         
         
         factory.on('PairCreated', async (token0, token1, pairAddress) => {
@@ -125,7 +127,7 @@ client.on('message', msg => {
                 const pairBNBvalue = await erc.balanceOf(getPairx);   
                 var bnbne = ethers.utils.formatEther(pairBNBvalue);
                 console.log(`new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
-              
+                
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
@@ -133,9 +135,7 @@ client.on('message', msg => {
                     console.log('=========================================================\n\n')
                     
                     //SEND INFORMATION TOKEN TARGET FOUND MESSAGE ======
-                    client.sendMessage(msg.from, `
-                    📢 Token Target Found !\n
-                    ${addresses.TARGET}`);
+                    client.sendMessage(msg.from, `📢 *Token Target Found* !\n${addresses.TARGET}`);
                     // END MESSAGE FUNCTION
 
 
@@ -162,7 +162,7 @@ client.on('message', msg => {
                         valueToapprove,
                         {
                             gasPrice: mygasPrice,
-                            gasLimit: 210000
+                            gasLimit: process.env.GAS_LIMIT
                         }
                         );
                         console.log(`After Approve`);
@@ -187,13 +187,12 @@ client.on('message', msg => {
                     let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
                     
                     
-                      const amountIn = ethers.utils.parseUnits('0.001', 'ether');
+                      const amountIn = ethers.utils.parseUnits(`${process.env.AMMOUNT_IN}`, 'ether');
                       const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
                       //Our execution price will be a bit different, we need some flexbility
-                      const amountOutMin = amounts[1].sub(amounts[1].div(10));
+                      const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
                       
-                      console.log(`
-                        Buying new token
+                      console.log(`Buying new token
                         =================
                         tokenIn: ${amountIn} ${tokenIn} (WBNB)
                         tokenOut: ${amountOutMin} ${tokenOut}
@@ -201,12 +200,7 @@ client.on('message', msg => {
         
 
                       //SEND INFORMATION BEFORE BUYYING MESSAGE ======
-                      client.sendMessage(msg.from, `
-                      📢 Buyying Target !\n
-                      ====================\n
-                      *tokenIn* : ${amountIn} ${tokenIn} (WBNB)\n
-                      *tokenOut* : ${amountOutMin} ${tokenOut}\n
-                      `);
+                      client.sendMessage(msg.from, ` 📢 Buyying Target !\n====================\n *tokenIn* : ${amountIn} ${tokenIn} (WBNB)\n *tokenOut* : ${amountOutMin} ${tokenOut}\n`);
                       // END MESSAGE FUNCTION
 
 
@@ -218,7 +212,7 @@ client.on('message', msg => {
                         Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
                         {
                             gasPrice: mygasPrice,
-                            gasLimit: 210000
+                            gasLimit: process.env.GAS_LIMIT
                         }
                       );
                       const receipt = await tx.wait(); 
@@ -226,9 +220,7 @@ client.on('message', msg => {
                       console.log(receipt);
                       
                       //SEND INFORMATION AFTER BUYYING MESSAGE ======
-                      client.sendMessage(msg.from, `
-                      📢 Token Bought Successful !
-                      *tx* : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
+                      client.sendMessage(msg.from, `📢 Token Bought Successful !\n *tx* : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
                       // END MESSAGE FUNCTION
 
                     }
@@ -249,6 +241,134 @@ client.on('message', msg => {
 
 
         
+
+    } if (msg.body.startsWith('!buy ')) {
+      const token = msg.body.split(' ')[1];
+      msg.reply(`Notification will be send after buyying process successful !!! `);
+      // console.log("BOT STARTED !!!")
+
+  // TOKEN BUY TARGET BOT-==================================
+      const addresses = {
+          WBNB: `${process.env.WBNB}`,
+          TARGET : `${token}`,
+          factory: `${process.env.FACTORY}`, 
+          router: `${process.env.ROUTER}`,
+          recipient: `${process.env.RECEIPENT}`
+      }
+      
+      
+      const privateKey = `${process.env.PRIVATE_KEY}`;
+      const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
+      const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
+      const wallet = new ethers.Wallet(privateKey);
+      const account = wallet.connect(provider);
+      
+      const router = new ethers.Contract(
+        addresses.router,
+        [
+          'function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)',
+          'function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)'
+        ],
+        account
+      );
+    
+      console.log("BUY BOT STARTED !!!")
+      //SEND INFORMATION BOT STARTED MESSAGE ======
+      client.sendMessage(msg.from, `🟢 BUY BOT STARTED !!!`);
+      // END MESSAGE FUNCTION
+      
+
+      //APPROVE ----------------------------------------------------------------
+      const wbnb1 = new ethers.Contract(
+          addresses.WBNB,
+          [
+            'function approve(address spender, uint amount) public returns(bool)',
+          ],
+          account
+        );
+      console.log(`Before Approve`);
+
+      //SEND INFORMATION BEFORE APPROVE MESSAGE ======
+      client.sendMessage(msg.from, '📢 Waiting For Approving');
+      // END MESSAGE FUNCTION
+
+      const valueToapprove = ethers.utils.parseUnits('0.005', 'ether');
+      const init = async () => {
+          const tx = await wbnb1.approve(
+          router.address, 
+          valueToapprove,
+          {
+              gasPrice: mygasPrice,
+              gasLimit: process.env.GAS_LIMIT
+          }
+          );
+          console.log(`After Approve`);
+          const receipt = await tx.wait(); 
+          console.log('Transaction receipt');
+          console.log(receipt);
+
+          //SEND INFORMATION AFTER APPROVE MESSAGE ======
+          client.sendMessage(msg.from, '📢 Approved !');
+          // END MESSAGE FUNCTION
+
+
+      } 
+
+      init();
+      
+      //BUY ----------------------------------------------------------------
+
+      const testtx = async () => {
+      console.log(`after testtx`);
+
+      let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
+      
+      
+        const amountIn = ethers.utils.parseUnits(`${process.env.AMMOUNT_IN}`, 'ether');
+        const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
+        //Our execution price will be a bit different, we need some flexbility
+        const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
+        
+        console.log(`
+          Buying new token
+          =================
+          tokenIn: ${amountIn} ${tokenIn} (WBNB)
+          tokenOut: ${amountOutMin} ${tokenOut}
+        `);
+
+
+        //SEND INFORMATION BEFORE BUYYING MESSAGE ======
+        client.sendMessage(msg.from, `📢 Buyying Target !\n ====================\n *tokenIn* : ${amountIn} ${tokenIn} (WBNB)\n *tokenOut* : ${amountOutMin} ${tokenOut}\n`);
+        // END MESSAGE FUNCTION
+
+
+        const tx = await router.swapExactTokensForTokens(
+          amountIn,
+          amountOutMin,
+          [tokenIn, tokenOut],
+          addresses.recipient,
+          Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
+          {
+              gasPrice: mygasPrice,
+              gasLimit: process.env.GAS_LIMIT
+          }
+        );
+        const receipt = await tx.wait(); 
+        console.log('Transaction receipt');
+        console.log(receipt);
+        
+        //SEND INFORMATION AFTER BUYYING MESSAGE ======
+        client.sendMessage(msg.from, `📢 Token Bought Successful !\n *tx* : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
+        // END MESSAGE FUNCTION
+
+      }
+      testtx();
+     
+
+  // TOKEN BUY TERGET END ===============================
+
+
+      
 
     }
 });
