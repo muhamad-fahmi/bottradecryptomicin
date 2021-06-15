@@ -49,7 +49,7 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     console.log('MESSAGE RECEIVED', msg);
-    if (msg.body === '!ping reply') {
+    if (msg.body === '!ping') {
       // Send a new message as a reply to the current one
       msg.reply('pong');
 
