@@ -13,9 +13,11 @@
 <ol>
   <li>Run <b>node botWhatsapp.js</b> on your console</li>
   <li>Scan showed QR WhatsApp Web on your screen</li>
-  <li>After bot started test it by send message to bot number with message <b>!ping</b></li>
+  <li>After bot started test it by send message to bot number with message <b>help</b></li>
   <li>Send message <b>!target YourTargetToken</b></li>
   <li>Wait process token buying successful</li>
+  <li>Available Command :</li>
+  
 </ol>
 
 <h3>USAGE BOT VIA CLI</h3>
