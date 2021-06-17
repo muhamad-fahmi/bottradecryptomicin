@@ -18,7 +18,12 @@
   <li>Wait process token buying successful</li>
   <li>Available Command :</li>
   <ul>
-     <li>help</li>
+      <li><b>help</b> (Show the available command)</li>
+      <li><b>!target</b> ContractTokenTarget (Buy Early Token)</li>
+      <li><b>!buy</b> ContractAddressWillYouBuyWithWBNB (Swap token from WBNB to other token)</li>
+      <li><b>!swap</b> ContractAddressWillYouSwap  (Swap bep-20 token to WBNB)</li>
+      <li><b>!price</b> ContractAdress (Price Information)</li>
+      <li><b>!trade</b> -t ContractAddress -tp TPValue (Trade with automation take profit)</li>
   </ul>
 </ol>
 
