@@ -2,6 +2,7 @@ require('dotenv').config()
 const ethers = require('ethers');
 const dateTime = require('node-datetime');
 const dt = dateTime.create();
+const {Builder, By, Key, until} = require('selenium-webdriver');
 
 //BOT WHATSAPP START =========================================
 
@@ -369,6 +370,47 @@ client.on('message', msg => {
 
 
       
+
+    } if (msg.body.startsWith('!price ')) {
+      const token = msg.body.split(' ')[1];
+
+      (async function example() {
+        let driver = await new Builder().forBrowser('firefox').build();
+        try {
+          await driver.get(`https://charts.bogged.finance/?token=${token}`);
+        
+          await driver.wait(until.titleContains('$'), 100000)
+          let persennaik, persenturun
+   
+          await driver.wait(until.elementLocated(By.className('dark:text-error-bright')), 10000).then(async (result) => {
+              persenturun = await result.getText()
+              console.log(persenturun)
+          }).catch((err) => {
+              console.log(err.name)
+          });
+          
+          await driver.wait(until.elementLocated(By.className('dark:text-success-bright')), 10000).then(async (result) => {
+              persennaik = await result.getText()
+              console.log(persennaik)
+          }).catch((err) => {
+              console.log(err.name)
+          });
+
+          var titles = await driver.getTitle()
+          if(!persennaik){
+              console.log('turun')
+              msg.reply(`\n📊 *LATEST PRICE* \n\n=========================\n\n📉 Price Decrease ${persenturun}\n💵 ${titles}\n`);
+          }else if(!persenturun){
+              console.log('naik')
+              msg.reply(`\n📊 *LATEST PRICE* \n\n=========================\n\n📈 Price Increase ${persennaik}\n💵 ${titles}\n`);
+          }
+
+         
+        } finally {
+          await driver.quit();
+        }
+      })();
+
 
     }
 });
