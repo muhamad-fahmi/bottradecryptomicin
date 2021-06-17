@@ -17,7 +17,9 @@
   <li>Send message <b>!target YourTargetToken</b></li>
   <li>Wait process token buying successful</li>
   <li>Available Command :</li>
-  
+  <ul>
+     <li>help</li>
+  </ul>
 </ol>
 
 <h3>USAGE BOT VIA CLI</h3>
