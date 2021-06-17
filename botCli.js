@@ -9,7 +9,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-console.log('\nCHOOSE MENU : \n (1) EARLY BUY TARGET \n (2) EARLY BUY TARGET');
+console.log('\nCHOOSE MENU : \n (1) EARLY BUY TARGET \n (2) SWAP TOKEN');
 
 rl.question("\nChoose ? ", function(menu) {
   if(menu == 1){
@@ -85,8 +85,7 @@ rl.question("\nChoose ? ", function(menu) {
                 var bnbne = ethers.utils.formatEther(pairBNBvalue);
                 console.log(`new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
               
-                if(time >= tim)
-        
+                
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
