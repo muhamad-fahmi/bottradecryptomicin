@@ -11,7 +11,7 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
 const fs = require('fs');
 const { Client } = require('whatsapp-web.js');
 
-const SESSION_FILE_PATH = './session.json';
+const SESSION_FILE_PATH = '../session.json';
 let sessionCfg;
 if (fs.existsSync(SESSION_FILE_PATH)) {
     sessionCfg = require(SESSION_FILE_PATH);
@@ -162,8 +162,8 @@ client.on('message', msg => {
                         router.address, 
                         valueToapprove,
                         {
-                            gasPrice: mygasPrice,
-                            gasLimit: process.env.GAS_LIMIT
+                          gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
+                          gasLimit: process.env.GAS_LIMIT_APPROVE
                         }
                         );
                         console.log(`After Approve`);
@@ -212,8 +212,8 @@ client.on('message', msg => {
                         addresses.recipient,
                         Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
                         {
-                          gasPrice: ethers.utils.parseUnits('30', 'gwei'),
-                          gasLimit: 300000
+                          gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+                          gasLimit: process.env.GAS_LIMIT_SWAP
                         }
                       );
                       const receipt = await tx.wait(); 
@@ -259,7 +259,6 @@ client.on('message', msg => {
       
       
       const privateKey = `${process.env.PRIVATE_KEY}`;
-      const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
       const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
       const wallet = new ethers.Wallet(privateKey);
       const account = wallet.connect(provider);
@@ -299,8 +298,8 @@ client.on('message', msg => {
           router.address, 
           valueToapprove,
           {
-              gasPrice: mygasPrice,
-              gasLimit: process.env.GAS_LIMIT
+            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
+            gasLimit: process.env.GAS_LIMIT_APPROVE
           }
           );
           console.log(`After Approve`);
@@ -350,8 +349,8 @@ client.on('message', msg => {
           addresses.recipient,
           Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
           {
-              gasPrice: mygasPrice,
-              gasLimit: process.env.GAS_LIMIT
+            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+            gasLimit: process.env.GAS_LIMIT_SWAP
           }
         );
         const receipt = await tx.wait(); 
@@ -387,7 +386,6 @@ client.on('message', msg => {
       
       
       const privateKey = `${process.env.PRIVATE_KEY}`;
-      const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
       const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
       const wallet = new ethers.Wallet(privateKey);
       const account = wallet.connect(provider);
@@ -429,8 +427,8 @@ client.on('message', msg => {
           router.address, 
           valueToapprove,
           {
-              gasPrice: mygasPrice,
-              gasLimit: process.env.GAS_LIMIT
+            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
+            gasLimit: process.env.GAS_LIMIT_APPROVE
           }
           );
           console.log(`After Approve`);
@@ -482,8 +480,8 @@ client.on('message', msg => {
           addresses.recipient,
           Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
           {
-              gasPrice: ethers.utils.parseUnits('30', 'gwei'),
-              gasLimit: 300000
+            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+            gasLimit: process.env.GAS_LIMIT_SWAP
           }
         );
         const receipt = await tx.wait(); 
@@ -635,8 +633,8 @@ client.on('message', msg => {
                   router.address, 
                   valueToapprove,
                   {
-                      gasPrice: mygasPrice,
-                      gasLimit: process.env.GAS_LIMIT
+                    gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
+                    gasLimit: process.env.GAS_LIMIT_APPROVE
                   }
                   );
                   console.log(`After Approve`);
@@ -688,8 +686,8 @@ client.on('message', msg => {
                   addresses.recipient,
                   Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
                   {
-                      gasPrice: ethers.utils.parseUnits('30', 'gwei'),
-                      gasLimit: 300000
+                    gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+                    gasLimit: process.env.GAS_LIMIT_SWAP
                   }
                 );
                 const receipt = await tx.wait(); 
