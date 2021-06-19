@@ -29,7 +29,6 @@ rl.question("\nChoose ? ", function(menu) {
         
         
         const privateKey = `${process.env.PRIVATE_KEY}`;
-        const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
         const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
         const wallet = new ethers.Wallet(privateKey);
         const account = wallet.connect(provider);
@@ -57,6 +56,10 @@ rl.question("\nChoose ? ", function(menu) {
             account
           ); 
         
+            
+         
+
+
         console.log("BOT STARTED !!!")
         
         
@@ -83,9 +86,28 @@ rl.question("\nChoose ? ", function(menu) {
                 const getPairx = await factory.getPair(tokenIn, tokenOut); 
                 const pairBNBvalue = await erc.balanceOf(getPairx);   
                 var bnbne = ethers.utils.formatEther(pairBNBvalue);
-                console.log(`new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
-              
+                // GET TOKEN DETAIL
+                const daiAddress = `${tokenOut}`;
+                const daiAbi = [
+                  // Some details about the token
+                  "function name() view returns (string)",
+                  "function symbol() view returns (string)",
+                  // Get the account balance
+                  "function balanceOf(address) view returns (uint)",
+                  // Send some of your tokens to someone else
+                  "function transfer(address to, uint amount)",
+                  // An event triggered whenever anyone transfers to someone else
+                  "event Transfer(address indexed from, address indexed to, uint amount)"
+                ];
+
+                const daiContract = new ethers.Contract(daiAddress, daiAbi, provider);
+                var name = await daiContract.name()
+                var symbol = await daiContract.symbol()
                 
+                var balanceTokenout = await daiContract.balanceOf(tokenOut)
+
+                console.log(`new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB `);
+
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
@@ -108,8 +130,8 @@ rl.question("\nChoose ? ", function(menu) {
                         router.address, 
                         valueToapprove,
                         {
-                            gasPrice: mygasPrice,
-                            gasLimit: process.env.GAS_LIMIT
+                            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
+                            gasLimit: process.env.GAS_LIMIT_APPROVE
                         }
                         );
                         console.log(`After Approve`);
@@ -147,8 +169,8 @@ rl.question("\nChoose ? ", function(menu) {
                         addresses.recipient,
                         Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
                         {
-                            gasPrice: mygasPrice,
-                            gasLimit: process.env.GAS_LIMIT
+                          gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+                          gasLimit: process.env.GAS_LIMIT_SWAP
                         }
                       );
                       const receipt = await tx.wait(); 
@@ -190,7 +212,6 @@ rl.question("\nChoose ? ", function(menu) {
         
         
         const privateKey = `${process.env.PRIVATE_KEY}`;
-        const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
         const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
         const wallet = new ethers.Wallet(privateKey);
         const account = wallet.connect(provider);
@@ -225,8 +246,8 @@ rl.question("\nChoose ? ", function(menu) {
             router.address, 
             valueToapprove,
             {
-                gasPrice: mygasPrice,
-                gasLimit: process.env.GAS_LIMIT
+              gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
+              gasLimit: process.env.GAS_LIMIT_APPROVE
             }
             );
             console.log(`After Approve`);
@@ -268,8 +289,8 @@ rl.question("\nChoose ? ", function(menu) {
             addresses.recipient,
             Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
             {
-                gasPrice: mygasPrice,
-                gasLimit: process.env.GAS_LIMIT
+              gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+              gasLimit: process.env.GAS_LIMIT_SWAP
             }
           );
           const receipt = await tx.wait(); 
