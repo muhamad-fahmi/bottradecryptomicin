@@ -28,7 +28,7 @@ client.on('qr', (qr) => {
 });
 
 client.on('authenticated', (session) => {
-    console.log('AUTHENTICATED', session);
+    //console.log('AUTHENTICATED', session);
     sessionCfg=session;
     fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), function (err) {
         if (err) {
@@ -70,7 +70,6 @@ client.on('message', msg => {
         
         
         const privateKey = `${process.env.PRIVATE_KEY}`;
-        const mygasPrice = ethers.utils.parseUnits(`${process.env.GWEI}`, 'gwei');
         const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
         const wallet = new ethers.Wallet(privateKey);
         const account = wallet.connect(provider);
@@ -100,7 +99,7 @@ client.on('message', msg => {
         
         console.log("BOT STARTED !!!")
         //SEND INFORMATION BOT STARTED MESSAGE ======
-        client.sendMessage(msg.from, `🟢 BOT STARTED !!!`);
+        client.sendMessage(msg.from, `BOT STARTED !!!`);
         // END MESSAGE FUNCTION
         
         
@@ -127,8 +126,25 @@ client.on('message', msg => {
                 const getPairx = await factory.getPair(tokenIn, tokenOut); 
                 const pairBNBvalue = await erc.balanceOf(getPairx);   
                 var bnbne = ethers.utils.formatEther(pairBNBvalue);
-                console.log(`new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
-                
+                // GET TOKEN DETAIL
+                const daiAddress = `${tokenOut}`;
+                const daiAbi = [
+                  // Some details about the token
+                  "function name() view returns (string)",
+                  "function symbol() view returns (string)",
+                  // Get the account balance
+                  "function balanceOf(address) view returns (uint)",
+                  // Send some of your tokens to someone else
+                  "function transfer(address to, uint amount)",
+                  // An event triggered whenever anyone transfers to someone else
+                  "event Transfer(address indexed from, address indexed to, uint amount)"
+                ];
+
+                const daiContract = new ethers.Contract(daiAddress, daiAbi, provider);
+                var name = await daiContract.name()
+                var symbol = await daiContract.symbol()
+                console.log(`new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB `);
+
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
@@ -216,13 +232,17 @@ client.on('message', msg => {
                           gasLimit: process.env.GAS_LIMIT_SWAP
                         }
                       );
-                      const receipt = await tx.wait(); 
-                      console.log('Transaction receipt');
-                      console.log(receipt);
-                      
-                      //SEND INFORMATION AFTER BUYYING MESSAGE ======
-                      client.sendMessage(msg.from, `📢 Token Bought Successful !\n *tx* : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
-                      // END MESSAGE FUNCTION
+                      await tx.wait().then(async(result) => {
+                        console.log('Transaction receipt');
+                        console.log(result);
+                        
+                         //SEND INFORMATION AFTER BUYYING MESSAGE ======
+                          client.sendMessage(msg.from, `📢 Token Bought Successful !\n *tx* : https://www.bscscan.com/tx/${result.logs[1].transactionHash}`);
+                          // END MESSAGE FUNCTION
+
+                      }).catch((err) => {
+                        console.log(err.reason);
+                      });
 
                     }
                     testtx();
@@ -349,18 +369,22 @@ client.on('message', msg => {
           addresses.recipient,
           Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
           {
-            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
+            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP6}`, 'gwei'),
             gasLimit: process.env.GAS_LIMIT_SWAP
           }
         );
-        const receipt = await tx.wait(); 
-        console.log('Transaction receipt');
-        console.log(receipt);
-        
-        //SEND INFORMATION AFTER BUYYING MESSAGE ======
-        client.sendMessage(msg.from, `📢 Token Bought Successful !\n *tx* : https://www.bscscan.com/tx/${receipt.logs[1].transactionHash}`);
-        // END MESSAGE FUNCTION
+        await tx.wait().then(async(result) => {
+          console.log('Transaction receipt');
+          console.log(result);
+          
+          //SEND INFORMATION AFTER BUYYING MESSAGE ======
+          client.sendMessage(msg.from, `📢 Token Bought Successful !\n *tx* : https://www.bscscan.com/tx/${result.logs[1].transactionHash}`);
+          // END MESSAGE FUNCTION
 
+        }).catch((err) => {
+          console.log(err.reason);
+        });; 
+        
       }
       testtx();
      
@@ -509,8 +533,8 @@ client.on('message', msg => {
         try {
           await driver.get(`https://charts.bogged.finance/?token=${token}`);
         
-          await driver.wait(until.titleContains('$')).then(async (result) => {
-            // persenturun = await result.getText()
+          await driver.wait(until.titleContains('$'), 200000).then(async (result) => {
+            msg.reply(`\n*No Token Price Found !!!`);
             console.log(result)
         }).catch((err) => {
             console.log(err.name)
