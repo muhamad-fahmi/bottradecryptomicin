@@ -46,7 +46,7 @@ rl.question("\nChoose ? ", function(menu) {
             [{"constant": true,"inputs": [{"name": "_owner","type": "address"}],"name": "balanceOf","outputs": [{"name": "balance","type": "uint256"}],"payable": false,"type": "function"}],
             account
           );  
-        
+          
           const factory = new ethers.Contract(
             addresses.factory,
             [
@@ -108,7 +108,7 @@ rl.question("\nChoose ? ", function(menu) {
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
-                    console.log('(', date, '-', time, `) new token => https://bscscan.com/token/${tokenOut} - liquidity ${bnbne} BNB`);
+                    console.log('(', date, '-', time, `) new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB`);
                     console.log('=========================================================\n\n')
                     
                     
@@ -132,7 +132,7 @@ rl.question("\nChoose ? ", function(menu) {
                         }
                         );
                         console.log(`After Approve`);
-                        const receipt = await tx.wait(); 
+                        const receipt = await tx.wait(1); 
                         console.log('Transaction receipt');
                         console.log(receipt);
                     } 
