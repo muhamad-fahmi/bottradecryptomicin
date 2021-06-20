@@ -103,9 +103,6 @@ rl.question("\nChoose ? ", function(menu) {
                 const daiContract = new ethers.Contract(daiAddress, daiAbi, provider);
                 var name = await daiContract.name()
                 var symbol = await daiContract.symbol()
-                
-                var balanceTokenout = await daiContract.balanceOf(tokenOut)
-
                 console.log(`new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB `);
 
                 if(tokenOut === addresses.TARGET){
