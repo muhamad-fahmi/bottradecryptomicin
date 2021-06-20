@@ -369,7 +369,7 @@ client.on('message', msg => {
           addresses.recipient,
           Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from the current Unix time
           {
-            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP6}`, 'gwei'),
+            gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_SWAP}`, 'gwei'),
             gasLimit: process.env.GAS_LIMIT_SWAP
           }
         );
@@ -739,6 +739,9 @@ client.on('message', msg => {
       })();
      
       
+    } if (msg.body === 'cancel'){
+      msg.reply('Process Canceled !');
+      process.exit()
     }
 });
 
