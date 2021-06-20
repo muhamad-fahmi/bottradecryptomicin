@@ -237,7 +237,7 @@ rl.question("\nChoose ? ", function(menu) {
         console.log(`Before Approve`);
 
        
-        const valueToapprove = ethers.utils.parseUnits('0.005', 'ether');
+        const valueToapprove = ethers.utils.parseUnits('0.001', 'ether');
         const init = async () => {
             const tx = await wbnb1.approve(
             router.address, 
@@ -270,12 +270,28 @@ rl.question("\nChoose ? ", function(menu) {
           const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
           //Our execution price will be a bit different, we need some flexbility
           const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
-          
+           // GET TOKEN DETAIL
+           const daiAddress = `${tokenOut}`;
+           const daiAbi = [
+             // Some details about the token
+             "function name() view returns (string)",
+             "function symbol() view returns (string)",
+             // Get the account balance
+             "function balanceOf(address) view returns (uint)",
+             // Send some of your tokens to someone else
+             "function transfer(address to, uint amount)",
+             // An event triggered whenever anyone transfers to someone else
+             "event Transfer(address indexed from, address indexed to, uint amount)"
+           ];
+
+           const daiContract = new ethers.Contract(daiAddress, daiAbi, provider);
+           var name = await daiContract.name()
+           var symbol = await daiContract.symbol()
           console.log(`
             Buying new token
             =================
             tokenIn: ${amountIn} ${tokenIn} (WBNB)
-            tokenOut: ${amountOutMin} ${tokenOut}
+            tokenOut: ${amountOutMin} ${tokenOut} (${symbol})
           `);
 
 
