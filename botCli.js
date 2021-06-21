@@ -18,6 +18,7 @@ rl.question("\nChoose ? ", function(menu) {
     rl.question("\nToken Target ? ", function(target) {
       //START PROGRAM TARGET 
       
+        const targetnya = target.split(' ')[0]
         const ammountWBNB = target.split(' ')[1];
         
         if(typeof ammountWBNB === 'undefined'){
@@ -28,7 +29,7 @@ rl.question("\nChoose ? ", function(menu) {
 
         const addresses = {
             WBNB: `${process.env.WBNB}`,
-            TARGET : `${target}`,
+            TARGET : `${targetnya}`,
             factory: `${process.env.FACTORY}`, 
             router: `${process.env.ROUTER}`,
             recipient: `${process.env.RECEIPENT}`
@@ -124,8 +125,7 @@ rl.question("\nChoose ? ", function(menu) {
                     console.log('=========================================================\n\n')
                     
 
-                    //AMOUNT IN WBNB
-                    const amountIn = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
+                    
                     
                     //APPROVE ----------------------------------------------------------------
                     const wbnb1 = new ethers.Contract(
@@ -137,11 +137,11 @@ rl.question("\nChoose ? ", function(menu) {
                       );
                     console.log(`Before Approve`);
 
-
+                    const valueToapprove = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
                     const init = async () => {
                         const tx = await wbnb1.approve(
                         router.address, 
-                        amountIn,
+                        valueToapprove,
                         {
                             gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
                             gasLimit: process.env.GAS_LIMIT_APPROVE
@@ -161,8 +161,9 @@ rl.question("\nChoose ? ", function(menu) {
                     console.log(`after testtx`);
         
                     let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
-                    
-            
+                      //AMOUNT IN WBNB
+                      const amountIn = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
+              
                       const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
                       //Our execution price will be a bit different, we need some flexbility
                       const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
@@ -212,19 +213,13 @@ rl.question("\nChoose ? ", function(menu) {
   }else if(menu == 2){
     
     rl.question("\nToken Address ? ", function(token) {
+      const tokennya = token.split(' ')[0]
       const ammountWBNB = token.split(' ')[1];
-
-      if(typeof ammountWBNB === 'undefined'){
-        console.log('\nYOU MUST ADJUST AMOUNT OF YOUR WBNB !!! ')
-        console.log('Example : 0x92834823748327423blabla 0.002 (that value of your wbnb)')
-        process.exit(1)
-      }
-
 
        // TOKEN BUY TARGET BOT-==================================
         const addresses = {
             WBNB: `${process.env.WBNB}`,
-            TARGET : `${token}`,
+            TARGET : `${tokennya}`,
             factory: `${process.env.FACTORY}`, 
             router: `${process.env.ROUTER}`,
             recipient: `${process.env.RECEIPENT}`
@@ -245,12 +240,15 @@ rl.question("\nChoose ? ", function(menu) {
           account
         );
       
+        if(typeof ammountWBNB === 'undefined'){
+          console.log('\nYOU MUST ADJUST AMOUNT OF YOUR WBNB !!! ')
+          console.log('Example : 0x92834823748327423blabla 0.002 (that value of your wbnb)')
+          process.exit(1)
+        }
+
         console.log("BUY BOT STARTED !!!")
         
-        //AMOUNT IN WBNB
-        const amountIn = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
-        
-
+         
         //APPROVE ----------------------------------------------------------------
 
         const wbnb1 = new ethers.Contract(
@@ -261,20 +259,28 @@ rl.question("\nChoose ? ", function(menu) {
             account
           );
         console.log(`Before Approve`);
+        
+
+        //AMOUNT IN WBNB
+        const valueToapprove = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
 
         const init = async () => {
             const tx = await wbnb1.approve(
             router.address, 
-            amountIn,
+            valueToapprove,
             {
               gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
               gasLimit: process.env.GAS_LIMIT_APPROVE
             }
             );
             console.log(`After Approve`);
-            const receipt = await tx.wait(); 
-            console.log('Transaction receipt');
-            console.log(receipt);
+            await tx.wait().then(async(result) => {
+              console.log('Approve receipt');
+              console.log(result);
+              
+            }).catch((err) => {
+              console.log(err.reason);
+            });
 
 
 
@@ -289,7 +295,10 @@ rl.question("\nChoose ? ", function(menu) {
 
         let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
         
-        
+          
+          //AMOUNT IN WBNB
+          const amountIn = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
+
           const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
           //Our execution price will be a bit different, we need some flexbility
           const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
@@ -317,7 +326,7 @@ rl.question("\nChoose ? ", function(menu) {
             tokenOut: ${amountOutMin} ${tokenOut} (${symbol})
           `);
 
-
+          
           const tx = await router.swapExactTokensForTokens(
             amountIn,
             amountOutMin,
@@ -329,9 +338,13 @@ rl.question("\nChoose ? ", function(menu) {
               gasLimit: process.env.GAS_LIMIT_SWAP
             }
           );
-          const receipt = await tx.wait(); 
-          console.log('Transaction receipt');
-          console.log(receipt);
+          await tx.wait().then(async(result) => {
+            console.log('Transaction receipt');
+            console.log(result);
+            
+          }).catch((err) => {
+            console.log(err.reason);
+          });
           
         }
         testtx();
