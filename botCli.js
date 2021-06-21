@@ -63,8 +63,7 @@ rl.question("\nChoose ? ", function(menu) {
             account
           ); 
         
-            
-         
+          
 
 
         console.log("BOT STARTED !!!")
@@ -93,6 +92,7 @@ rl.question("\nChoose ? ", function(menu) {
                 const getPairx = await factory.getPair(tokenIn, tokenOut); 
                 const pairBNBvalue = await erc.balanceOf(getPairx);   
                 var bnbne = ethers.utils.formatEther(pairBNBvalue);
+
                 // GET TOKEN DETAIL
                 const daiAddress = `${tokenOut}`;
                 const daiAbi = [
@@ -110,8 +110,13 @@ rl.question("\nChoose ? ", function(menu) {
                 const daiContract = new ethers.Contract(daiAddress, daiAbi, provider);
                 var name = await daiContract.name()
                 var symbol = await daiContract.symbol()
-                console.log(`new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB `);
+                
+                
 
+                
+                console.log(`new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB `);
+                
+              
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
@@ -131,7 +136,8 @@ rl.question("\nChoose ? ", function(menu) {
                         account
                       );
                     console.log(`Before Approve`);
-                    const valueToapprove = ethers.utils.parseUnits('0.005', 'ether');
+
+
                     const init = async () => {
                         const tx = await wbnb1.approve(
                         router.address, 
@@ -206,7 +212,7 @@ rl.question("\nChoose ? ", function(menu) {
   }else if(menu == 2){
     
     rl.question("\nToken Address ? ", function(token) {
-      const ammountWBNB = msg.body.split(' ')[1];
+      const ammountWBNB = token.split(' ')[1];
 
       if(typeof ammountWBNB === 'undefined'){
         console.log('\nYOU MUST ADJUST AMOUNT OF YOUR WBNB !!! ')
