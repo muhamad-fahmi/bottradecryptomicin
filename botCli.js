@@ -9,7 +9,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-console.log('\nCHOOSE MENU : \n (1) EARLY BUY TARGET \n (2) SWAP TOKEN');
+console.log('\nCHOOSE MENU : \n (1) EARLY BUY TARGET\n     Command : ContractAddress amountInWBNB  \n (2) SWAP TOKEN\n     Command : ContractAddress amountInWBNB');
 
 rl.question("\nChoose ? ", function(menu) {
   if(menu == 1){
@@ -17,7 +17,14 @@ rl.question("\nChoose ? ", function(menu) {
 
     rl.question("\nToken Target ? ", function(target) {
       //START PROGRAM TARGET 
-
+      
+        const ammountWBNB = target.split(' ')[1];
+        
+        if(typeof ammountWBNB === 'undefined'){
+          console.log('\nYOU MUST ADJUST AMOUNT OF YOUR WBNB !!! ')
+          console.log('Example : 0x92834823748327423blabla 0.002 (that value of your wbnb)')
+          process.exit(1)
+        }
 
         const addresses = {
             WBNB: `${process.env.WBNB}`,
@@ -111,6 +118,9 @@ rl.question("\nChoose ? ", function(menu) {
                     console.log('(', date, '-', time, `) new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB`);
                     console.log('=========================================================\n\n')
                     
+
+                    //AMOUNT IN WBNB
+                    const amountIn = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
                     
                     //APPROVE ----------------------------------------------------------------
                     const wbnb1 = new ethers.Contract(
@@ -125,7 +135,7 @@ rl.question("\nChoose ? ", function(menu) {
                     const init = async () => {
                         const tx = await wbnb1.approve(
                         router.address, 
-                        valueToapprove,
+                        amountIn,
                         {
                             gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
                             gasLimit: process.env.GAS_LIMIT_APPROVE
@@ -146,8 +156,7 @@ rl.question("\nChoose ? ", function(menu) {
         
                     let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
                     
-                    
-                      const amountIn = ethers.utils.parseUnits('0.001', 'ether');
+            
                       const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
                       //Our execution price will be a bit different, we need some flexbility
                       const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
@@ -197,7 +206,15 @@ rl.question("\nChoose ? ", function(menu) {
   }else if(menu == 2){
     
     rl.question("\nToken Address ? ", function(token) {
-      
+      const ammountWBNB = msg.body.split(' ')[1];
+
+      if(typeof ammountWBNB === 'undefined'){
+        console.log('\nYOU MUST ADJUST AMOUNT OF YOUR WBNB !!! ')
+        console.log('Example : 0x92834823748327423blabla 0.002 (that value of your wbnb)')
+        process.exit(1)
+      }
+
+
        // TOKEN BUY TARGET BOT-==================================
         const addresses = {
             WBNB: `${process.env.WBNB}`,
@@ -224,9 +241,12 @@ rl.question("\nChoose ? ", function(menu) {
       
         console.log("BUY BOT STARTED !!!")
         
+        //AMOUNT IN WBNB
+        const amountIn = ethers.utils.parseUnits(`${ammountWBNB}`, 'ether');
         
 
         //APPROVE ----------------------------------------------------------------
+
         const wbnb1 = new ethers.Contract(
             addresses.WBNB,
             [
@@ -236,12 +256,10 @@ rl.question("\nChoose ? ", function(menu) {
           );
         console.log(`Before Approve`);
 
-       
-        const valueToapprove = ethers.utils.parseUnits('0.001', 'ether');
         const init = async () => {
             const tx = await wbnb1.approve(
             router.address, 
-            valueToapprove,
+            amountIn,
             {
               gasPrice: ethers.utils.parseUnits(`${process.env.GWEI_APPROVE}`, 'gwei'),
               gasLimit: process.env.GAS_LIMIT_APPROVE
@@ -266,7 +284,6 @@ rl.question("\nChoose ? ", function(menu) {
         let tokenIn = addresses.WBNB , tokenOut = addresses.TARGET;
         
         
-          const amountIn = ethers.utils.parseUnits(`${process.env.AMMOUNT_IN}`, 'ether');
           const amounts = await router.getAmountsOut(amountIn, [tokenIn, tokenOut]);
           //Our execution price will be a bit different, we need some flexbility
           const amountOutMin = amounts[1].sub(amounts[1].div(process.env.AMMOUNT_OUT_MIN));
