@@ -148,9 +148,13 @@ rl.question("\nChoose ? ", function(menu) {
                         }
                         );
                         console.log(`After Approve`);
-                        const receipt = await tx.wait(1); 
-                        console.log('Transaction receipt');
-                        console.log(receipt);
+                        await tx.wait().then(async(result) => {
+                          console.log('Approve receipt');
+                          console.log(result);
+                          console.log(`\n\nTX : https://www.bscscan.com/tx/${result.logs[1].transactionHash}\n\n`)
+                        }).catch((err) => {
+                          console.log(err.reason);
+                        });
                     } 
         
                     init();
@@ -186,9 +190,14 @@ rl.question("\nChoose ? ", function(menu) {
                           gasLimit: process.env.GAS_LIMIT_SWAP
                         }
                       );
-                      const receipt = await tx.wait(); 
-                      console.log('Transaction receipt');
-                      console.log(receipt);
+                      await tx.wait().then(async(result) => {
+                        console.log('Transaction receipt');
+                        console.log(result);
+                        console.log(`\n\nTX : https://www.bscscan.com/tx/${result.logs[1].transactionHash}\n\n`)
+                        
+                      }).catch((err) => {
+                        console.log(err.reason);
+                      });
                     }
                     testtx();
         
@@ -243,7 +252,7 @@ rl.question("\nChoose ? ", function(menu) {
         if(typeof ammountWBNB === 'undefined'){
           console.log('\nYOU MUST ADJUST AMOUNT OF YOUR WBNB !!! ')
           console.log('Example : 0x92834823748327423blabla 0.002 (that value of your wbnb)')
-          process.exit(1)
+          process.exit()
         }
 
         console.log("BUY BOT STARTED !!!")
@@ -277,7 +286,7 @@ rl.question("\nChoose ? ", function(menu) {
             await tx.wait().then(async(result) => {
               console.log('Approve receipt');
               console.log(result);
-              
+              console.log(`\n\nTX : https://www.bscscan.com/tx/${result.logs[1].transactionHash}\n\n`)
             }).catch((err) => {
               console.log(err.reason);
             });
@@ -341,7 +350,7 @@ rl.question("\nChoose ? ", function(menu) {
           await tx.wait().then(async(result) => {
             console.log('Transaction receipt');
             console.log(result);
-            
+            console.log(`\n\nTX : https://www.bscscan.com/tx/${result.logs[1].transactionHash}\n\n`)
           }).catch((err) => {
             console.log(err.reason);
           });
