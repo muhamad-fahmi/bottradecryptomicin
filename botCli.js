@@ -3,7 +3,6 @@ const ethers = require('ethers');
 const dateTime = require('node-datetime');
 const dt = dateTime.create();
 const readline = require("readline");
-// var currencyFormatter = require('curr');
 
 const rl = readline.createInterface({
     input: process.stdin,
