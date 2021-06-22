@@ -3,6 +3,7 @@ const ethers = require('ethers');
 const dateTime = require('node-datetime');
 const dt = dateTime.create();
 const readline = require("readline");
+// var currencyFormatter = require('curr');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -37,7 +38,7 @@ rl.question("\nChoose ? ", function(menu) {
         
         
         const privateKey = `${process.env.PRIVATE_KEY}`;
-        const provider = new ethers.providers.WebSocketProvider('wss://bsc-ws-node.nariox.org:443');
+        const provider = new ethers.providers.WebSocketProvider('https://dry-cool-snow.bsc.quiknode.pro/dd42b2f3bae4790676cf246bc1eca382986d8ba5/');
         const wallet = new ethers.Wallet(privateKey);
         const account = wallet.connect(provider);
         
@@ -86,7 +87,7 @@ rl.question("\nChoose ? ", function(menu) {
             }
             if(typeof tokenIn === 'undefined') {
                 return;
-              }
+            }
             
               
             try {
@@ -112,20 +113,77 @@ rl.question("\nChoose ? ", function(menu) {
                 var name = await daiContract.name()
                 var symbol = await daiContract.symbol()
                 
+                const getMaxTxAmmount = new ethers.Contract(
+                  tokenOut,
+                  [
+                    {
+                      "inputs":[],
+                      "name":"_maxTxAmount",
+                      "outputs":[
+                        {
+                          "internalType":"uint256",
+                          "name":"",
+                          "type":"uint256"
+                        }
+                      ],
+                      "stateMutability":"view",
+                      "type":"function",
+                   },
+                   {
+                     "inputs":[],
+                     "name":"totalSupply",
+                     "outputs":[
+                       {
+                         "internalType":"uint256",
+                         "name":"",
+                         "type":"uint256"
+                        }
+                      ],
+                      "stateMutability":"view",
+                      "type":"function"
+                    }
+                  ],
+                  provider
+                )
                 
+                
+                function formatCurrency(nums) {
+                  var num = parseInt(nums)
+                  var p = num.toFixed(2).split(".");
+                  return p[0].split("").reverse().reduce(function(acc, num, i, orig) {
+                      return  num=="-" ? acc : num + (i && !(i % 3) ? "," : "") + acc;
+                  }, "") ;
+                }
 
+                let supply
+                await getMaxTxAmmount.totalSupply().then((result) => {
+                   supply = formatCurrency(ethers.utils.formatUnits(result, 9))
+                }).catch((err) => {
+                  const metode = err.method
+                  if(metode === "totalSupply"){
+                      supply = 'No available supply info !'
+                  }
+                });
+
+                let maxTX 
+                await getMaxTxAmmount._maxTxAmount().then((result) => {
+                  maxTX = formatCurrency(ethers.utils.formatUnits(result, 9))
+                }).catch((err) => {
+                  const metode = err.method
+                  if(metode === "_maxTxAmount()"){
+                      maxTX = 'Not verified yet !'
+                  }
+                });  
                 
-                console.log(`new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB `);
                 
+                console.log(`\n# New Token =>\n Contract : https://bscscan.com/token/${tokenOut}\n Token Name : ${name}\n Symbol : ${symbol}\n Liquidity : ${bnbne} BNB\n Supply : ${supply}\n Max Tx : ${maxTX} `);
               
                 if(tokenOut === addresses.TARGET){
                     console.log('\n\n=========================================================')
                     console.log('=> TOKEN ', addresses.TARGET, ' -> FOUND')
-                    console.log('(', date, '-', time, `) new token => https://bscscan.com/token/${tokenOut} | ${name} | ${symbol} - liquidity ${bnbne} BNB`);
+                    console.log(` Time : ${date} ${time}\n Contract : https://bscscan.com/token/${tokenOut}\n Token Name : ${name}\n Symbol : ${symbol}\n Liquidity : ${bnbne} BNB\n Max Tx : ${maxTX} `);
                     console.log('=========================================================\n\n')
-                    
-
-                    
+ 
                     
                     //APPROVE ----------------------------------------------------------------
                     const wbnb1 = new ethers.Contract(
